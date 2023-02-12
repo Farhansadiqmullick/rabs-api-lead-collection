@@ -1,3 +1,10 @@
+.page-banner__content {
+  margin: auto;
+  max-width: 1170px;
+  display: block;
+}
+
+
 .rabs-adoption-table {
   margin-top: 20px;
   width: 100%;

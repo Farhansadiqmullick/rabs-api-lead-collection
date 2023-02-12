@@ -55,12 +55,15 @@ class RabsAPILead
   function onAdminRefresh()
   {
     global $wpdb;
-    // $values = implode(', ',rabs_get_data());
-    $query = "INSERT INTO $this->tablename (`customername`, `address`, `phone`, `email`, `timeoforder`, `orderfulltime`, `paymenttype`, `orderitems`, `itemoptions`, `itemprice`, `totalprice`) VALUES ";
-    $query .= rabs_get_data();
-    // var_dump($query);
-    $wpdb->insert($this->tablename, $wpdb->query($query));
-    // die();
+    $data = rabs_get_data();
+    if (isset($data) && !empty($data)) {
+      foreach ($data as $row) {
+        $columns = implode(", ", array_keys($row));
+        $placeholders = implode(", ", array_fill(0, count($row), "%s"));
+        $query = $wpdb->prepare("INSERT INTO $this->tablename ($columns) VALUES ($placeholders)", array_values($row));
+        $wpdb->query($query);
+      }
+    }
   }
 
   function loadAssets()

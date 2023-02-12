@@ -10,13 +10,10 @@ $getCustomers = new GetCustomerData();
 
 get_header(); ?>
 
-<div class="page-banner">
-  <div class="page-banner__bg-image" style="background-color:redyellow"></div>
-  <div class="page-banner__content container container--narrow">
-    <h1 class="page-banner__title">Rabs Customer Accepted Order List</h1>
-    <div class="page-banner__intro">
-      <p>Rabs Customer Accepted Order List From GlobalFood API</p>
-    </div>
+<div class="page-banner__content container container--narrow">
+  <h3 class="page-banner__title">Rabs Customer Accepted Order List</h3>
+  <div class="page-banner__intro">
+    <p>Rabs Customer Accepted Order List From GlobalFood API</p>
   </div>
 </div>
 
@@ -37,6 +34,8 @@ get_header(); ?>
       <th>Total price</th>
     </tr>
     <?php
+    $total_results = $wpdb->get_var("SELECT COUNT(*) FROM $getCustomers->tablename");
+    $total_pages = ceil($total_results / $getCustomers->items_per_page);
     foreach ($getCustomers->customer_data as $data) : ?>
       <tr>
         <td><?php echo $data->customername; ?></td>
@@ -54,17 +53,18 @@ get_header(); ?>
     <?php endforeach;
     ?>
   </table>
-  <?php
-  // echo paginate_links( array(
-  //       'base' => add_query_arg( 'cpage', '%#%' ),
-  //       'format' => '',
-  //       'prev_text' => __('&laquo;'),
-  //       'next_text' => __('&raquo;'),
-  //       'total' => ceil($getCustomers->total),
-  //       'current' => $getCustomers->page
-  //   ));
-
+  <div class="pagination">
+    <?php
+    $total_rows = $wpdb->get_var("SELECT COUNT(*) FROM $getCustomers->tablename");
+    $total_pages = ceil($total_rows / $getCustomers->items_per_page);
+    for ($i = 1; $i <= $total_pages; $i++) {
+      echo '<a href="' . add_query_arg('paged', $i) . '">' . $i . '</a> ';
+    }
     ?>
+  </div>
+
+
+
 </div>
 
 <?php get_footer(); ?>

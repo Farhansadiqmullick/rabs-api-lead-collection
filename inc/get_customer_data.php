@@ -3,29 +3,31 @@
 class GetCustomerData
 {
   protected $args;
-  protected $placeholders;
   public $customer_data;
   public $page;
   public $total;
   public $items_per_page;
+  public $placeholders;
+  public $tablename;
   function __construct()
   {
     global $wpdb;
-    $tablename = $wpdb->prefix . 'customer_data';
+    $this->tablename = $wpdb->prefix . 'customer_data';
 
     $this->args = $this->getArgs();
     $this->placeholders = $this->createPlaceholders();
+    $this->items_per_page = 10; // Number of items to display per page
 
-    $query = "SELECT * FROM $tablename ";
-    $this->total = "SELECT COUNT(*) FROM $tablename ";
-    $query .= $this->createWhereText();
-    // var_dump($query);
-    // die();
-    // $this->items_per_page = 5;
-    // $this->page =  isset($this->total) ? ($this->total / $this->items_per_page) : 1;
-    // $offset = ($this->page *  $this->items_per_page) -  $this->items_per_page;
+    if (get_query_var('paged')) {
+      $current_page = intval(get_query_var('paged')); //Always use get_query_var
+    } else {
+      $current_page = 1;
+    }
+    $offset = ($current_page - 1) * $this->items_per_page; // Calculate the offset for the query
+    $order = 'DESC';
 
-    $this->customer_data = $wpdb->get_results($wpdb->prepare($query, $this->placeholders));
+    $query = "SELECT * FROM $this->tablename ORDER BY timeoforder $order LIMIT $offset, $this->items_per_page";
+    $this->customer_data = $wpdb->get_results($wpdb->prepare($query));
   }
 
 
@@ -55,24 +57,5 @@ class GetCustomerData
     return array_map(function ($x) {
       return $x;
     }, $this->args);
-  }
-
-  function createWhereText()
-  {
-    $whereQuery = "";
-
-    if (count($this->args)) {
-      $whereQuery = "WHERE ";
-    }
-
-    $currentPosition = 0;
-    foreach ($this->args as $item) {
-      if ($currentPosition != count($this->args) - 1) {
-        $whereQuery .= " AND ";
-      }
-      $currentPosition++;
-    }
-
-    return $whereQuery;
   }
 }

@@ -2,28 +2,27 @@
 function rabs_api_calling()
 {
   $data = '';
-  // $url = 'https://pos.globalfoodsoft.com/pos/order/pop';
-  // $args = array(
-  //   'method'      => 'POST',
-  //   'timeout'     => 45,
-  //   'headers' => array(
-  //     'Content-Type' => 'application/json',
-  //     'Glf-Api-Version' => '2',
-  //     'Authorization' => 'Dd4o8CaeJHwaZ5M1B',
-  //   )
-  // );
-  // $response = wp_remote_post($url, $args);
-  // try {
-  //   $body = wp_remote_retrieve_body($response);
-  //   $data = json_decode($body, true);
-  // } catch (Exception $ex) {
-  //   echo 'Error' . $ex . ': Please contact with the developer for debugging the issue.';
-  //   $data = null;
-  //   die();
-  // }
+  $url = 'https://pos.globalfoodsoft.com/pos/order/pop';
+  $args = array(
+    'method'      => 'POST',
+    'timeout'     => 45,
+    'headers' => array(
+      'Content-Type' => 'application/json',
+      'Glf-Api-Version' => '2',
+      'Authorization' => 'Dd4o8CaeJHwaZ5M1B',
+    )
+  );
+  $response = wp_remote_post($url, $args);
+  try {
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+  } catch (Exception $ex) {
+    echo 'Error' . $ex . ': Please contact with the developer for debugging the issue.';
+    $data = null;
+  }
 
-  $data = file_get_contents(plugin_dir_path(__DIR__) . 'response3.json');
-  $data = json_decode($data, true);
+  // $data = file_get_contents(plugin_dir_path(__DIR__) . 'response3.json');
+  // $data = json_decode($data, true);
   return $data;
 }
 
@@ -43,34 +42,36 @@ function rabs_get_data()
         // var_dump($data);
         // die();
         if (isset($data) && (is_array($data) || is_object($data)) && $data != null) {
-          $fields = '';
-
           if ($data) {
             $values[] = array(
               'customername' => isset($data['client_first_name']) ? sanitize_text_field($data['client_first_name'] . ' ' . $data['client_last_name']) : '',
-              'address' => isset($data['client_address']) ? sanitize_text_field($data['client_address']) : '',
-              'phone' => isset($data['client_phone']) ? sanitize_text_field($data['client_phone']) : '',
-              'email' => isset($data['client_email']) ? sanitize_text_field($data['client_email']) : '',
-              'timeoforder' => isset($data['updated_at']) ? date('d.m.Y, g:i a', strtotime($data['updated_at'])) : '',
-              'orderfulltime' => isset($data['fulfill_at']) ? date('d.m.Y, g:i a', strtotime($data['fulfill_at'])) : '',
-              'paymenttype' => isset($data['used_payment_methods']) ? sanitize_text_field($data['used_payment_methods'][0]) : '',
+              'address' => isset($data['client_address']) ? sanitize_text_field($data['client_address']) : 'No Address Given',
+              'phone' => isset($data['client_phone']) ? sanitize_text_field($data['client_phone']) : 'No. Not Given',
+              'email' => isset($data['client_email']) ? sanitize_text_field($data['client_email']) : 'Email not Given',
+              'timeoforder' => isset($data['updated_at']) ? date('d.m.Y, g:i a', strtotime($data['updated_at'])) : 'Null',
+              'orderfulltime' => isset($data['fulfill_at']) ? date('d.m.Y, g:i a', strtotime($data['fulfill_at'])) : 'Null',
+              'paymenttype' => isset($data['used_payment_methods']) ? sanitize_text_field($data['used_payment_methods'][0]) : 'Not Found',
               'orderitems' => order_items($data['items']),
               'itemoptions' => item_options($data['items']),
-              'itemprice' => floatval($data['sub_total_price']) . ' ' . $data['currency'],
-              'totalprice' => floatval($data['total_price']) . ' ' . $data['currency'],
+              'itemprice' => isset($data['sub_total_price']) ? $data['sub_total_price'] . ' ' . $data['currency'] : 'Price Not Found',
+              'totalprice' => isset($data['total_price']) ? $data['total_price'] . ' ' . $data['currency'] : 'Price Not Found'
             );
           } else {
             return false;
           }
+        } else {
+          return false;
         }
       }
-      foreach ($values as $v_key => $value) {
-        $fields .= "('{$value['customername']}', '{$value['address']}', '{$value['phone']}', '{$value['email']}', '{$value['timeoforder']}', '{$value['orderfulltime']}', '{$value['paymenttype']}', '{$value['orderitems']}', '{$value['itemoptions']}', '{$value['itemprice']}', '{$value['totalprice']}')";
-        if ($v_key != (count($values) - 1)) {
-          $fields .= ", ";
-        }
-      }
-      return $fields;
+      // foreach ($values as $v_key => $value) {
+      //   $fields .= "('{$value['customername']}', '{$value['address']}', '{$value['phone']}', '{$value['email']}', '{$value['timeoforder']}', '{$value['orderfulltime']}', '{$value['paymenttype']}', '{$value['orderitems']}', '{$value['itemoptions']}', '{$value['itemprice']}', '{$value['totalprice']}')";
+      //   if ($v_key != (count($values) - 1)) {
+      //     $fields .= ", ";
+      //   }
+      // }
+      return $values;
+    } else {
+      return false;
     }
   }
   return false;
@@ -95,8 +96,10 @@ function order_items($items)
         }
       }
       return $multiple_items;
-    } else {
+    } elseif (is_string($items)) {
       return sanitize_text_field($items['name']);
+    } else {
+      return 'No Order data found';
     }
   }
 }
@@ -117,8 +120,10 @@ function item_options($options)
       }
       // var_dump($multiple_items);
       return $values;
-    } else {
+    } elseif (is_string($items)) {
       return sanitize_text_field($options[0]['options'][0]['name']);
+    } else {
+      return 'No Order data found';
     }
   }
 }
