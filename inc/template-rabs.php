@@ -57,14 +57,21 @@ get_header(); ?>
     <?php
     $total_rows = $wpdb->get_var("SELECT COUNT(*) FROM $getCustomers->tablename");
     $total_pages = ceil($total_rows / $getCustomers->items_per_page);
-    for ($i = 1; $i <= $total_pages; $i++) {
-      echo '<a href="' . add_query_arg('paged', $i) . '">' . $i . '</a> ';
-    }
+    $pagination_args = array(
+      'base' => add_query_arg('paged', '%#%'),
+      'format' => '?paged=%#%',
+      'total' => $total_pages,
+      'current' => $getCustomers->current_page,
+      'show_all' => false,
+      'prev_next' => true,
+      'prev_text' => __('&laquo; Prev'),
+      'next_text' => __('Next &raquo;'),
+      'type' => 'plain'
+    );
+
+    echo paginate_links($pagination_args);
     ?>
   </div>
-
-
-
 </div>
 
 <?php get_footer(); ?>

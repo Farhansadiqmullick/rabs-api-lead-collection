@@ -6,7 +6,7 @@
 
 
 .rabs-adoption-table {
-  margin-top: 20px;
+  margin: 20px 0px;
   width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
@@ -19,41 +19,36 @@
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
   text-align: left;
   padding: 12px 15px;
-  font-size: 12px;
+  font-size: 17px;
 }
 
 .rabs-adoption-table td {
   border: 1px solid #ddd;
   padding: 12px 15px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .rabs-adoption-table tr:nth-child(odd) td {
   background-color: #f1f1f1;
 }
 
-.delete-rabs-button {
-  border: none;
-  background-color: #e2e2e2;
-  color: red;
-  transform: scaleX(1.2);
-  font-weight: bold;
-  padding: 3px 5px;
-  cursor: pointer;
-  opacity: 0.65;
+.page-template-rabs-api-template .pagination{
+  text-align: center;
+  margin: 0 auto;
 }
 
-.delete-rabs-button:hover {
-  opacity: 1;
+.page-template-rabs-api-template .pagination a{
+  font-size: 16px;
+  background-color: white;
+  color: #4d4d4d;
+  padding: 8px 12px;
+  text-decoration: none;
 }
 
-.create-rabs-form {
-  margin-top: 30px;
-  padding: 20px;
-  background-color: rgb(240, 240, 240);
-  border: 1px solid #ddd;
+.page-template-rabs-api-template .pagination .current{
+  background-color: #4d4d4d;
+  color: white;
+  padding: 8px 12px;
 }
 
-.create-rabs-form p {
-  margin-bottom: 15px !important;
-}
+

@@ -2,9 +2,9 @@
 
 /*
   Plugin Name: Rabs API Lead Collection
-  Description: Ali express product importing
-  Author Name: Farhan Mullick
-  Author URIL: https://behance.net/farhanmullck
+  Description: Rabs API Lead Collection
+  Author: Farhan Mullick
+  Author URI: https://behance.net/farhanmullck
   Version: 1.0.0
   License: GPLv2 or later
   Text Domain: rabs_api
